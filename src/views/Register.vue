@@ -10,22 +10,26 @@
                         <br />
                             <div class="login-form-container">
                                 <div class="login-form">
-                                    <form>
-                                        <input type="text" name="name"  id="name" placeholder="Your Name" v-model="name">
+                                    <form v-on:submit.prevent="Register">
                                         <div class="button-box">
-                                            <div class="login-toggle-btn">
-                                        <input type="text" name="email"  id="email" placeholder="Email" v-model="email">
-                                        </div>
-                                        </div>
-                                        <div class="button-box">
-                                            <div class="login-toggle-btn">
-                                                <input type="password" class="form-control form-control-lg border-left-0" name="password" id="password" v-model="password" placeholder="Kata Sandi" required>                        
-                                                
+                                            <div class="col-form-label">
+                                                <input type="text" name="name"  id="name" placeholder="Your Name" v-model="name">   
                                             </div>
-                                            <input v-on:submit.prevent="Register" type="submit" name="register" class="default-btn floatright" value="register">
-
+                                        </div>
+                                        <div class="button-box">
+                                            <div class="col-form-label">
+                                        <input type="text" name="email"  id="email" placeholder="Email" v-model="email">
+                                            </div>
+                                        </div>
+                                        <div class="button-box">
+                                            <div class="col-form-label">
+                                                <input type="password" class="form-control form-control-lg border-left-0" name="password" id="password" v-model="password" placeholder="Kata Sandi" required>                           
+                                            </div>
+                                            <input type="submit" href="#pablo" value="register" class="default-btn floatright">
+                                            <!-- <b-button variant="success"><i class="mdi mdi-plus btn-icon-prepend"></i>Register</b-button> -->
                                         </div>
                                     </form>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -51,23 +55,42 @@ module.exports = {
       rows: 0,
       perPage: 10,
       key: "",
-      user: [],
-    //   fields: ["id", "name", "email", "address","phone_number", "Aksi"]
+      users: [],
+      fields: ["id", "name", "email", "password"]
     };
   },
 
   methods: {
-    Add: function() {
+      getData : function(){
+      let conf = { headers: { "Authorization" : 'Bearer ' + this.key } };
+      let offset = (this.currentPage - 1) * this.perPage;
+      this.$bvToast.show("loadingToast");
+      this.axios.get("/register", conf)
+      .then(response => {
+        if(response.data.status == 1){
+          this.$bvToast.hide("loadingToast");
+          this.users = response.data.users;
+          this.rows = response.data.count;
+        } else {
+          this.$bvToast.hide("loadingToast");
+          this.message = "Gagal menampilkan data petugas."
+          this.$bvToast.show("message");
+        }
+        
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    },
+    Register: function() {
       this.action = "insert";
       this.name = "";
       this.email = "";
       this.password = "";
-    
     },
 
     Save: function() {
       let conf = { headers: { Authorization: "Bearer " + this.key } };
-      this.$bvToast.show("loadingToast");
       if (this.action === "insert") {
         let form = new FormData();
         form.append("id", this.id);
@@ -79,14 +102,12 @@ module.exports = {
         this.axios
           .post("/register", form, conf)
           .then(response => {
-            this.$bvToast.hide("loadingToast");
             if (this.search == "") {
               this.getData();
             } else {
               this.searching();
             }
             this.message = response.data.message;
-            this.$bvToast.show("message");
           })
           .catch(error => {
             console.log(error);

@@ -6,6 +6,7 @@ import Login from '../views/Login.vue'
 import Detail from '../views/Detail.vue'
 import Iklansaya from '../views/Iklansaya.vue'
 import Profile from '../views/Profile.vue'
+import Item from '../views/item.vue'
 import Navbar from '../views/layouts/Navbar.vue'
 import Footer from '../views/layouts/Footer.vue'
 
@@ -41,6 +42,11 @@ const routes = [
     path: '/profile',
     name: 'profile',
     components: {default: Profile, header: Navbar, footer: Footer},
+  },
+  {
+    path: '/item',
+    name: 'item',
+    components: {default: Item},
   }
 ]
 
